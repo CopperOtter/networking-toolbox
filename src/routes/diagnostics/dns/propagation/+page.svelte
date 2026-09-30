@@ -97,9 +97,12 @@
     }) as DnsResult[];
     if (successfulResults.length === 0) return false;
 
-    const firstAnswer = successfulResults[0].result!.Answer!.map((a) => a.data).sort();
+    // Cloudflare quotes TXT strings and splits long ones, Google returns them joined
+    const normalize = (data: string) =>
+      lastQuery?.type === 'TXT' ? data.replace(/^"(.*)"$/, '$1').replace(/" "/g, '') : data;
+    const firstAnswer = successfulResults[0].result!.Answer!.map((a) => normalize(a.data)).sort();
     return successfulResults.every((r) => {
-      const answers = r.result!.Answer!.map((a) => a.data).sort();
+      const answers = r.result!.Answer!.map((a) => normalize(a.data)).sort();
       return JSON.stringify(answers) === JSON.stringify(firstAnswer);
     });
   }

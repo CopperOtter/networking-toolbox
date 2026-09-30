@@ -26,6 +26,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
+  import { resolve } from '$app/paths';
   import { SUB_NAV } from '$lib/constants/nav';
   import Icon from '$lib/components/global/Icon.svelte';
   import { type NavItem, type NavGroup, footerLinks } from '$lib/constants/nav';
@@ -216,7 +217,7 @@
     bind:this={menuContentElement}
   >
     <div class="menu-header">
-      <a href="/" class="home-link" on:click={handleLinkClick} aria-label="Home">
+      <a href={resolve('/')} class="home-link" on:click={handleLinkClick} aria-label="Home">
         <Icon name="networking" size="lg" />
         <h2>{site.title}</h2>
       </a>

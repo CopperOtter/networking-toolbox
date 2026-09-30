@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
+  import { browser } from '$app/environment';
   import '../styles/base.scss';
   import '../styles/variables.scss';
   import '../styles/themes.scss';
@@ -331,7 +332,7 @@
   {/if}
 
   <!-- Analytics (Plausible or custom) -->
-  {#if ANALYTICS_ENABLED}
+  {#if browser && ANALYTICS_ENABLED}
     <script defer data-domain={ANALYTICS_DOMAIN} src={ANALYTICS_DSN}></script>
   {/if}
 
