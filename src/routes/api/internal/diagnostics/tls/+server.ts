@@ -36,12 +36,14 @@ interface OCSPStaplingReq extends BaseReq {
   action: 'ocsp-stapling';
   hostname: string;
   port?: number;
+  servername?: string;
 }
 
 interface CipherPresetsReq extends BaseReq {
   action: 'cipher-presets';
   hostname: string;
   port?: number;
+  servername?: string;
 }
 
 interface BannerReq extends BaseReq {
@@ -312,12 +314,12 @@ async function probeALPN(host: string, port: number, protocols: string[], server
 }
 
 // OCSP Stapling check implementation
-async function checkOCSPStapling(hostname: string, port: number = 443): Promise<any> {
+async function checkOCSPStapling(hostname: string, port: number = 443, servername?: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const options = {
       host: hostname,
       port,
-      servername: hostname,
+      servername: servername || hostname,
       requestOCSP: true,
       // SECURITY: rejectUnauthorized must be false to test OCSP stapling (see above)
       rejectUnauthorized: false,
@@ -388,7 +390,7 @@ async function checkOCSPStapling(hostname: string, port: number = 443): Promise<
 }
 
 // Cipher Presets test implementation
-async function testCipherPresets(hostname: string, port: number = 443): Promise<any> {
+async function testCipherPresets(hostname: string, port: number = 443, servername?: string): Promise<any> {
   // First verify the host is reachable by attempting a basic TLS connection
   try {
     await new Promise<void>((resolve, reject) => {
@@ -396,6 +398,7 @@ async function testCipherPresets(hostname: string, port: number = 443): Promise<
         {
           host: hostname,
           port,
+          servername: servername || hostname,
           // SECURITY: rejectUnauthorized must be false to test cipher presets (see above)
           rejectUnauthorized: false,
         },
@@ -857,7 +860,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
 
       case 'ocsp-stapling': {
-        const { hostname, port = 443 } = body as OCSPStaplingReq;
+        const { hostname, port = 443, servername } = body as OCSPStaplingReq;
 
         // Validate hostname
         if (!hostname || typeof hostname !== 'string' || hostname.trim() === '') {
@@ -869,12 +872,12 @@ export const POST: RequestHandler = async ({ request }) => {
           throw error(400, 'Invalid port number');
         }
 
-        const result = await checkOCSPStapling(hostname, port);
+        const result = await checkOCSPStapling(hostname, port, servername);
         return json({ ...result, hostname, port });
       }
 
       case 'cipher-presets': {
-        const { hostname, port = 443 } = body as CipherPresetsReq;
+        const { hostname, port = 443, servername } = body as CipherPresetsReq;
 
         // Validate hostname
         if (!hostname || typeof hostname !== 'string' || hostname.trim() === '') {
@@ -886,7 +889,7 @@ export const POST: RequestHandler = async ({ request }) => {
           throw error(400, 'Invalid port number');
         }
 
-        const result = await testCipherPresets(hostname, port);
+        const result = await testCipherPresets(hostname, port, servername);
         return json({ ...result, hostname, port });
       }
 
