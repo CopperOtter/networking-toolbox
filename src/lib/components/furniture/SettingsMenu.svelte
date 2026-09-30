@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import Icon from '$lib/components/global/Icon.svelte';
   import { tooltip } from '$lib/actions/tooltip';
   import { browser } from '$app/environment';
@@ -48,7 +49,7 @@
 
   // Handle double-click to navigate to settings page
   function handleDoubleClick() {
-    goto('/settings');
+    goto(resolve('/settings'));
   }
 
   onMount(() => {
