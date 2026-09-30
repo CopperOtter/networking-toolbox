@@ -129,7 +129,7 @@
         let score = results.find((r) => r.href === page.href)?.score || 0;
         const label = page.label.toLowerCase();
         const words = label.split(/\s+/);
-        let hasMeaningfulMatch = false;
+        let hasMeaningfulMatch = score > 0;
 
         // Acronym match (e.g., "dc" matches "DNS Check")
         const acronym = words.map((w) => w[0]).join('');
