@@ -23,7 +23,7 @@ export const about = {
 
 export const license = {
   name: 'MIT',
-  date: '2025',
+  date: '2026',
   holder: 'Alicia Sykes',
   ref: 'https://opensource.org/licenses/MIT',
   url: 'https://github.com/Lissy93/networking-toolbox/blob/main/LICENSE',
@@ -37,7 +37,7 @@ export const author = {
   url: 'https://aliciasykes.com',
   portfolio: 'https://as93.net',
   sponsor: 'https://github.com/sponsors/lissy93',
-  avatar: 'https://i.ibb.co/Q7XTgybB/DSC-0444-2.jpg',
+  avatar: 'https://pixelflare.cc/alicia/profile-pictures/dsc_04442',
 };
 
 export default { site, license, author };
