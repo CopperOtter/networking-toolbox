@@ -4,6 +4,7 @@
   import ExamplesCard from '$lib/components/common/ExamplesCard.svelte';
   import ErrorCard from '$lib/components/common/ErrorCard.svelte';
   import { tlsHandshakeContent } from '$lib/content/tls-handshake';
+  import { tooltip } from '$lib/actions/tooltip.js';
   import '../../../../styles/diagnostics-pages.scss';
 
   interface HandshakePhase {
@@ -47,17 +48,6 @@
     { hostname: 'zoom.us', port: 443, description: 'Zoom' },
   ];
   const examples = useExamples(examplesList);
-  
-  // Reactive validation
-  const isInputValid = $derived(() => {
-    const trimmedHost = host.trim();
-    if (!trimmedHost) return false;
-    if (port === null || port < 1 || port > 65535) return false;
-    // Basic hostname/IP validation
-    const hostPattern =
-      /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$|^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$|^\[?[a-fA-F0-9:]+\]?$/;
-    return hostPattern.test(trimmedHost);
-  });
 
   async function analyzeHandshake() {
     diagnosticState.startOperation();
@@ -67,9 +57,9 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          hostname: hostname.trim(), 
+          hostname: hostname.trim(),
           port,
-          servername: useCustomServername && servername ? servername.trim() : undefined
+          servername: useCustomServername && servername ? servername.trim() : undefined,
         }),
       });
 
@@ -87,6 +77,8 @@
   function loadExample(example: (typeof examplesList)[0], index: number) {
     hostname = example.hostname;
     port = example.port;
+    servername = '';
+    useCustomServername = false;
     examples.select(index);
     analyzeHandshake();
   }
@@ -141,8 +133,8 @@
       <h3>Handshake Analysis</h3>
     </div>
     <div class="card-content">
-      <div class="form-row">
-        <div class="form-group">
+      <div class="lookup-form">
+        <div class="input-row">
           <label for="hostname"> Hostname </label>
           <input
             id="hostname"
@@ -159,37 +151,6 @@
           <label for="port"> Port </label>
           <input id="port" type="number" bind:value={port} placeholder="443" min="1" max="65535" />
         </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label class="checkbox-group">
-            <input
-              type="checkbox"
-              bind:checked={useCustomServername}
-              onchange={() => {
-                examples.clear();
-                if (isInputValid()) analyzeHandshake();
-              }}
-            />
-            Use custom SNI servername
-          </label>
-          {#if useCustomServername}
-            <input
-              type="text"
-              bind:value={servername}
-              placeholder="example.com"
-              use:tooltip={'Custom servername for SNI (Server Name Indication)'}
-              onchange={() => {
-                examples.clear();
-                if (isInputValid()) analyzeHandshake();
-              }}
-            />
-          {/if}
-        </div>
-      </div>
-
-      <div class="action-section">
         <button class="lookup-btn" onclick={analyzeHandshake} disabled={diagnosticState.loading || !hostname.trim()}>
           {#if diagnosticState.loading}
             <Icon name="loader" size="sm" animate="spin" />
@@ -199,6 +160,24 @@
             Analyze
           {/if}
         </button>
+      </div>
+      <div class="form-group">
+        <label class="checkbox-group">
+          <input type="checkbox" bind:checked={useCustomServername} />
+          Use custom SNI servername
+        </label>
+        {#if useCustomServername}
+          <input
+            type="text"
+            bind:value={servername}
+            placeholder="example.com"
+            use:tooltip={'Custom servername for SNI (Server Name Indication)'}
+            onchange={() => {
+              examples.clear();
+              if (hostname.trim()) analyzeHandshake();
+            }}
+          />
+        {/if}
       </div>
     </div>
   </div>
@@ -390,6 +369,36 @@
 </div>
 
 <style lang="scss">
+  .lookup-form {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: flex-end;
+    margin-bottom: var(--spacing-md);
+
+    label {
+      display: block;
+      margin-bottom: var(--spacing-sm);
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  .input-row {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+
+    input {
+      width: 100%;
+    }
+  }
+
   .port-row {
     display: flex;
     flex-direction: column;

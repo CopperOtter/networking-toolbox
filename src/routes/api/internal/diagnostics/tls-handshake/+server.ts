@@ -19,7 +19,6 @@ interface HandshakePhase {
 
 interface TLSHandshakeResponse {
   hostname: string;
-  servername?: string;
   port: number;
   success: boolean;
   totalTime: number;
@@ -130,7 +129,6 @@ function performTLSHandshake(hostname: string, port: number, servername?: string
 
           const response: TLSHandshakeResponse = {
             hostname,
-            servername: servername || hostname,
             port,
             success: true,
             totalTime,

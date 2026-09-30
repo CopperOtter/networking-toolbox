@@ -36,13 +36,14 @@ interface OCSPStaplingReq extends BaseReq {
   action: 'ocsp-stapling';
   hostname: string;
   port?: number;
+  servername?: string;
 }
 
 interface CipherPresetsReq extends BaseReq {
   action: 'cipher-presets';
   hostname: string;
-  servername?: string;
   port?: number;
+  servername?: string;
 }
 
 interface BannerReq extends BaseReq {
@@ -313,12 +314,12 @@ async function probeALPN(host: string, port: number, protocols: string[], server
 }
 
 // OCSP Stapling check implementation
-async function checkOCSPStapling(hostname: string, port: number = 443): Promise<any> {
+async function checkOCSPStapling(hostname: string, port: number = 443, servername?: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const options = {
       host: hostname,
       port,
-      servername: hostname,
+      servername: servername || hostname,
       requestOCSP: true,
       // SECURITY: rejectUnauthorized must be false to test OCSP stapling (see above)
       rejectUnauthorized: false,
@@ -859,7 +860,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
 
       case 'ocsp-stapling': {
-        const { hostname, port = 443 } = body as OCSPStaplingReq;
+        const { hostname, port = 443, servername } = body as OCSPStaplingReq;
 
         // Validate hostname
         if (!hostname || typeof hostname !== 'string' || hostname.trim() === '') {
@@ -871,7 +872,7 @@ export const POST: RequestHandler = async ({ request }) => {
           throw error(400, 'Invalid port number');
         }
 
-        const result = await checkOCSPStapling(hostname, port);
+        const result = await checkOCSPStapling(hostname, port, servername);
         return json({ ...result, hostname, port });
       }
 
@@ -889,7 +890,7 @@ export const POST: RequestHandler = async ({ request }) => {
         }
 
         const result = await testCipherPresets(hostname, port, servername);
-        return json({ ...result, hostname, port, servername });
+        return json({ ...result, hostname, port });
       }
 
       case 'banner': {
