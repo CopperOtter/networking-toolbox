@@ -3,10 +3,13 @@
   import { useDiagnosticState, useExamples } from '$lib/composables';
   import ExamplesCard from '$lib/components/common/ExamplesCard.svelte';
   import ErrorCard from '$lib/components/common/ErrorCard.svelte';
+  import { tooltip } from '$lib/actions/tooltip.js';
   import '../../../../styles/diagnostics-pages.scss';
 
   let hostname = $state('example.com');
   let port = $state('443');
+  let servername = $state('');
+  let useCustomServername = $state(false);
   const diagnosticState = useDiagnosticState<any>();
   const examplesList = [
     { host: 'cloudflare.com', port: '443', description: 'Cloudflare - OCSP stapling enabled' },
@@ -31,6 +34,7 @@
           action: 'ocsp-stapling',
           hostname: hostname.trim().toLowerCase(),
           port: parseInt(port) || 443,
+          servername: useCustomServername && servername ? servername.trim() : undefined,
         }),
       });
 
@@ -49,6 +53,8 @@
   function loadExample(example: (typeof examplesList)[0], index: number) {
     hostname = example.host;
     port = example.port;
+    servername = '';
+    useCustomServername = false;
     examples.select(index);
     checkOCSP();
   }
@@ -114,6 +120,23 @@
             {/if}
           </button>
         </div>
+      </div>
+      <div class="form-group">
+        <label class="checkbox-group">
+          <input type="checkbox" bind:checked={useCustomServername} />
+          Use custom SNI servername
+        </label>
+        {#if useCustomServername}
+          <input
+            type="text"
+            bind:value={servername}
+            placeholder="example.com"
+            disabled={diagnosticState.loading}
+            use:tooltip={'Custom servername for SNI (Server Name Indication)'}
+            onchange={() => examples.clear()}
+            onkeydown={(e) => e.key === 'Enter' && checkOCSP()}
+          />
+        {/if}
       </div>
     </div>
   </div>
