@@ -12,7 +12,6 @@ interface CTCertificate {
   issuer_name: string;
   common_name: string;
   name_value: string;
-  entry_timestamp: string;
   not_before: string;
   not_after: string;
   serial_number: string;
@@ -24,7 +23,6 @@ interface ProcessedCertificate {
   sans: string[];
   issuer: string;
   issuerId: number;
-  entryTimestamp: string;
   notBefore: string;
   notAfter: string;
   serialNumber: string;
@@ -125,7 +123,6 @@ async function searchCTLogs(domain: string): Promise<CTLogResponse> {
       sans,
       issuer: cert.issuer_name,
       issuerId: cert.issuer_ca_id,
-      entryTimestamp: cert.entry_timestamp,
       notBefore: cert.not_before,
       notAfter: cert.not_after,
       serialNumber: cert.serial_number,
