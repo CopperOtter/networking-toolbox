@@ -118,9 +118,13 @@ html[data-theme='light'] {
   --color-primary-dark: color-mix(in srgb, var(--color-primary) 85%, black 15%);
 
   --color-success: #4caf50;
+  --color-success-light: #15803d;
   --color-warning: #ff9800;
+  --color-warning-light: #a16207;
   --color-error: #f44336;
+  --color-error-light: #b91c1c;
   --color-info: #00bcd4;
+  --color-info-light: #0369a1;
 
   --border-secondary: #d3ddeb;
   --border-primary: #e0e0e0;
