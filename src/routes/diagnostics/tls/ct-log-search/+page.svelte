@@ -12,7 +12,6 @@
     sans: string[];
     issuer: string;
     issuerId: number;
-    entryTimestamp: string;
     notBefore: string;
     notAfter: string;
     serialNumber: string;

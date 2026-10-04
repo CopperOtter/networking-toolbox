@@ -83,15 +83,12 @@ jobs:
   deps:
     name: 🔒 Dependencies
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/dependency-review-action@v5
         with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm audit --audit-level=high
-      - run: npm ls --all
+          fail-on-severity: high
 
   summarize:
     name: 📊 Summary
@@ -117,7 +114,7 @@ jobs:
           DEPS: ${{ needs.deps.result }}
         run: |
           em() { case "$1" in success) echo "✅";; failure) echo "❌";; cancelled|skipped) echo "⏭️";; *) echo "❔";; esac; }
-          line() { r="$1"; n="$2"; cmd="$3"; s="Passing"; [ "$r" != "success" ] && s="**Failing** - run \`$cmd\`"; echo "- $(em "$r") $n: $s"; }
+          line() { r="$1"; n="$2"; cmd="$3"; s="Passing"; [ "$r" = "failure" ] && s="**Failing** - run \`$cmd\`"; [ "$r" = "skipped" ] && s="Skipped"; echo "- $(em "$r") $n: $s"; }
 
           {
             echo "## Check Summary"

@@ -40,7 +40,6 @@ describe('CT Log Search API', () => {
 					issuer_name: "Let's Encrypt",
 					common_name: 'example.com',
 					name_value: 'example.com\nwww.example.com',
-					entry_timestamp: '2024-01-01T00:00:00Z',
 					not_before: '2024-01-01T00:00:00Z',
 					not_after: '2024-04-01T00:00:00Z',
 					serial_number: 'abc123',
