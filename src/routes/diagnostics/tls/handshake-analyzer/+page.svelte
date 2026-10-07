@@ -4,6 +4,7 @@
   import ExamplesCard from '$lib/components/common/ExamplesCard.svelte';
   import ErrorCard from '$lib/components/common/ErrorCard.svelte';
   import { tlsHandshakeContent } from '$lib/content/tls-handshake';
+  import { tooltip } from '$lib/actions/tooltip.js';
   import '../../../../styles/diagnostics-pages.scss';
 
   interface HandshakePhase {
@@ -34,6 +35,8 @@
 
   let hostname = $state('google.com');
   let port = $state(443);
+  let servername = $state('');
+  let useCustomServername = $state(false);
   const diagnosticState = useDiagnosticState<TLSHandshakeResponse>();
   const clipboard = useClipboard();
   const examplesList = [
@@ -53,7 +56,11 @@
       const response = await fetch('/api/internal/diagnostics/tls-handshake', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hostname: hostname.trim(), port }),
+        body: JSON.stringify({
+          hostname: hostname.trim(),
+          port,
+          servername: useCustomServername && servername ? servername.trim() : undefined,
+        }),
       });
 
       if (!response.ok) {
@@ -70,6 +77,8 @@
   function loadExample(example: (typeof examplesList)[0], index: number) {
     hostname = example.hostname;
     port = example.port;
+    servername = '';
+    useCustomServername = false;
     examples.select(index);
     analyzeHandshake();
   }
@@ -151,6 +160,24 @@
             Analyze
           {/if}
         </button>
+      </div>
+      <div class="form-group">
+        <label class="checkbox-group">
+          <input type="checkbox" bind:checked={useCustomServername} />
+          Use custom SNI servername
+        </label>
+        {#if useCustomServername}
+          <input
+            type="text"
+            bind:value={servername}
+            placeholder="example.com"
+            use:tooltip={'Custom servername for SNI (Server Name Indication)'}
+            onchange={() => {
+              examples.clear();
+              if (hostname.trim()) analyzeHandshake();
+            }}
+          />
+        {/if}
       </div>
     </div>
   </div>
@@ -346,6 +373,7 @@
     display: flex;
     gap: var(--spacing-md);
     align-items: flex-end;
+    margin-bottom: var(--spacing-md);
 
     label {
       display: block;

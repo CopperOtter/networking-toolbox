@@ -146,9 +146,9 @@ async function checkMXHealth(domain: string, checkPorts: boolean = false): Promi
 }
 
 // Re-use DNS functions for SPF and DMARC
-async function checkSPF(domain: string): Promise<any> {
+async function checkSPF(domain: string, fetch: typeof globalThis.fetch): Promise<any> {
   // Call the DNS endpoint internally
-  const response = await fetch('http://localhost:5174/api/internal/diagnostics/dns', {
+  const response = await fetch('/api/internal/diagnostics/dns', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'spf-evaluator', domain }),
@@ -172,9 +172,9 @@ async function checkSPF(domain: string): Promise<any> {
   };
 }
 
-async function checkDMARC(domain: string): Promise<any> {
+async function checkDMARC(domain: string, fetch: typeof globalThis.fetch): Promise<any> {
   // Call the DNS endpoint internally
-  const response = await fetch('http://localhost:5174/api/internal/diagnostics/dns', {
+  const response = await fetch('/api/internal/diagnostics/dns', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'dmarc-check', domain }),
@@ -221,7 +221,7 @@ async function checkDMARC(domain: string): Promise<any> {
   return result;
 }
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, fetch }) => {
   try {
     const body: RequestBody = await request.json();
 
@@ -234,13 +234,13 @@ export const POST: RequestHandler = async ({ request }) => {
 
       case 'spf-check': {
         const { domain } = body as SPFCheckReq;
-        const result = await checkSPF(domain);
+        const result = await checkSPF(domain, fetch);
         return json(result);
       }
 
       case 'dmarc-check': {
         const { domain } = body as DMARCCheckReq;
-        const result = await checkDMARC(domain);
+        const result = await checkDMARC(domain, fetch);
         return json(result);
       }
 

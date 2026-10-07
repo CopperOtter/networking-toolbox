@@ -1,5 +1,6 @@
 <script lang="ts">
   import { slide } from 'svelte/transition';
+  import { resolve } from '$app/paths';
   import Icon from '$lib/components/global/Icon.svelte';
   import { accessibility, type AccessibilityOption } from '$lib/stores/accessibility';
   import { tooltip } from '$lib/actions/tooltip';
@@ -672,7 +673,7 @@ EOF'</code
   <!-- Navigation Links (only in dropdown mode) -->
   {#if !standalone}
     <div class="settings-section settings-links">
-      <a class="settings-link" href="/settings" onclick={handlers.linkClick}>
+      <a class="settings-link" href={resolve('/settings')} onclick={handlers.linkClick}>
         <Icon name="settings" size="sm" />
         <span>More Settings</span>
       </a>

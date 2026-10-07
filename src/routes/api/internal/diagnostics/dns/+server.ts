@@ -46,7 +46,7 @@ interface IndividualRecord {
 // DNS over HTTPS endpoints
 const DOH_ENDPOINTS = {
   cloudflare: 'https://cloudflare-dns.com/dns-query',
-  google: 'https://dns.google/dns-query',
+  google: 'https://dns.google/resolve',
   quad9: 'https://dns.quad9.net/dns-query',
   opendns: 'https://doh.opendns.com/dns-query',
 };

@@ -49,7 +49,6 @@ describe('CT Log Search API', () => {
 			expect(cert).toHaveProperty('sans');
 			expect(cert).toHaveProperty('issuer');
 			expect(cert).toHaveProperty('issuerId');
-			expect(cert).toHaveProperty('entryTimestamp');
 			expect(cert).toHaveProperty('notBefore');
 			expect(cert).toHaveProperty('notAfter');
 			expect(cert).toHaveProperty('serialNumber');

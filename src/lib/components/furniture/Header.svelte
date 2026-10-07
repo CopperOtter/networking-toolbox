@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import { site } from '$lib/constants/site';
   import { SITE_ICON, SITE_DESCRIPTION, DISABLE_SETTINGS } from '$lib/config/customizable-settings';
   import Icon from '$lib/components/global/Icon.svelte';
@@ -21,7 +22,7 @@
     <div class="header-content">
       <div class="logo">
         <div class="logo-icon">
-          <a href="/" aria-label="Home">
+          <a href={resolve('/')} aria-label="Home">
             {#if hasCustomLogo}
               <img src={SITE_ICON} alt={site.name} class="logo-image" />
             {:else}
@@ -30,7 +31,7 @@
           </a>
         </div>
         <div>
-          <h1><a href="/">{site.title}</a></h1>
+          <h1><a href={resolve('/')}>{site.title}</a></h1>
           <p class="subtitle">{SITE_DESCRIPTION || "The sysadmin's Swiss Army knife"}</p>
         </div>
       </div>
